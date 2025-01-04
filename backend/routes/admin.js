@@ -11,61 +11,77 @@ const isAdmin = (req, res, next) => {
     res.redirect('/login');
 };
 
-// Search by ID
-router.get('/searchById', isAdmin, (req, res) => {
-    const searchId = req.query.id;
+router.get('/search', isAdmin, (req, res) => {
+    const searchQuery = req.query.query;
 
-    if (!searchId) {
+    // Check if search query is empty
+    if (!searchQuery) {
         return res.redirect('/admin');
     }
 
-    db.query('SELECT * FROM users WHERE id = ?', [searchId], (err, users) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Database error');
-        }
-
-        if (users.length === 0) {
-            req.session.message = { type: 'error', text: 'User ID not found!' };
-            return res.redirect('/admin');
-        }
-
-        req.session.message = { type: 'success', text: 'User ID found!' };
-        res.render('admin', { users, message: req.session.message });
-    });
-});
-
-// Search by username
-router.get('/searchByText', isAdmin, (req, res) => {
-    const searchTerm = req.query.query;
-
-    db.query(
-        `SELECT * FROM users WHERE 
-        username LIKE ? OR 
-        email LIKE ? OR 
-        firstname LIKE ? OR 
-        middlename LIKE ? OR 
-        lastname LIKE ?`,
-        [`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`],
-        (err, users) => {
+    if (searchQuery.startsWith('#')) {
+        // Search by ID (Exact Match)
+        const searchId = searchQuery.substring(1); // Remove the `#`
+        db.query('SELECT * FROM users WHERE id = ?', [searchId], (err, users) => {
             if (err) {
                 console.error(err);
                 return res.status(500).send('Database error');
             }
 
-            let message = '';
-            if (users.length === 0) {
-                message = 'No matching users found!';
-            } else if (users.length === 1) {
-                message = '1 user found!';
-            } else {
-                message = `${users.length} users found!`;
-            }
-
+            let message = users.length === 0 
+                ? 'User ID not found!' 
+                : 'User ID found!';
+            
             req.session.message = { type: 'success', text: message };
-            res.render('admin', { users, message: req.session.message });
-        }
-    );
+            res.render('admin', { users, message: req.session.message, query: searchQuery });
+        });
+    } else if (searchQuery.startsWith('@')) {
+        // Search by username (Exact Match)
+        const searchTerm = searchQuery.substring(1); // Remove the `@`
+        db.query(
+            `SELECT * FROM users WHERE 
+            username = ?`,
+            [searchTerm], // Exact match on username
+            (err, users) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send('Database error');
+                }
+
+                let message = users.length === 0
+                    ? 'No matching users found!'
+                    : `${users.length} user(s) found!`;
+
+                req.session.message = { type: 'success', text: message };
+                res.render('admin', { users, message: req.session.message, query: searchQuery });
+            }
+        );
+    } else {
+        // General search across all fields with exact match
+        const searchTerm = searchQuery;
+        db.query(
+            `SELECT * FROM users WHERE 
+            firstname = ? OR 
+            middlename = ? OR 
+            lastname = ? OR 
+            email = ? OR 
+            mobile_no = ?`,
+            [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], // Exact match across fields
+            (err, users) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send('Database error');
+                }
+
+                let message = users.length === 0
+                    ? 'No matching users found!'
+                    : `${users.length} user(s) found!`;
+
+                req.session.message = { type: 'success', text: message };
+                res.render('admin', { users, message: req.session.message, query: searchQuery });
+            }
+        );
+    }
 });
 
 // Route for viewing users
@@ -75,8 +91,8 @@ router.get('/', isAdmin, (req, res) => {
             console.error(err);
             return res.status(500).send('Database error');
         }
-        res.render('admin', { users, message: req.session.message }); // Render admin view with users data
-        delete req.session.message; // Clear the message after it is displayed
+        res.render('admin', { users, message: req.session.message });
+        delete req.session.message; 
     });
 });
 
@@ -168,6 +184,36 @@ router.post('/delete/:id', isAdmin, (req, res) => {
             return res.redirect('/admin');
         }
         req.session.message = { type: 'success', text: 'User deleted successfully!' };
+        res.redirect('/admin');
+    });
+});
+
+// Route to activate a user
+router.post('/activate/:id', isAdmin, (req, res) => {
+    const userId = req.params.id;
+
+    db.query('UPDATE users SET active = 1 WHERE id = ?', [userId], (err) => {
+        if (err) {
+            console.error(err);
+            req.session.message = { type: 'error', text: 'Error activating user' };
+            return res.redirect('/admin');
+        }
+        req.session.message = { type: 'success', text: 'User activated successfully!' };
+        res.redirect('/admin');
+    });
+});
+
+// Route to deactivate a user
+router.post('/deactivate/:id', isAdmin, (req, res) => {
+    const userId = req.params.id;
+
+    db.query('UPDATE users SET active = 0 WHERE id = ?', [userId], (err) => {
+        if (err) {
+            console.error(err);
+            req.session.message = { type: 'error', text: 'Error deactivating user' };
+            return res.redirect('/admin');
+        }
+        req.session.message = { type: 'success', text: 'User deactivated successfully!' };
         res.redirect('/admin');
     });
 });
