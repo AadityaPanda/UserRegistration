@@ -26,6 +26,12 @@
         .actions button {
             margin-right: 5px;
         }
+        /* Style for the search input when it starts with @ or # */
+        .special-search {
+            font-weight: bold;
+            color: #007bff;
+            background-color: #e9ecef;
+        }
     </style>
 </head>
 <body>
@@ -58,7 +64,8 @@
                     name="query" 
                     class="form-control form-control-sm" 
                     placeholder="Search by #ID, @username/email, or name" 
-                    required>
+                    required
+                    oninput="formatSearchInput()">
             </div>
             <button type="submit" class="btn btn-primary btn-sm ml-2">Search</button>
         </form>
@@ -126,6 +133,18 @@
         <% if (typeof message !== 'undefined') { %>
             toastr["<%= message.type %>"]("<%= message.text %>");
         <% } %>
+
+        // Function to apply special formatting when the input starts with # or @
+        function formatSearchInput() {
+            const searchInput = document.getElementById('searchQuery');
+            const value = searchInput.value;
+
+            if (value.startsWith('#') || value.startsWith('@')) {
+                searchInput.classList.add('special-search');
+            } else {
+                searchInput.classList.remove('special-search');
+            }
+        }
     </script>
 </body>
 </html>
