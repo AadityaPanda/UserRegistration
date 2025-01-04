@@ -1,6 +1,13 @@
 ﻿# USER REGISTRATION APP
 
-This is a Node.js-based user registration application that allows users to sign up, receive email verification, and log in. It includes user registration functionality with email verification using Nodemailer for sending verification emails.
+This is a Node.js-based user registration application that allows users to sign up, receive email verification, and log in. It includes user registration functionality with email verification using Nodemailer for sending verification emails. Additionally, the application features an **Admin Dashboard**, where administrators can manage user accounts. The admin can:
+
+1. Create new user accounts.
+2. Edit existing user details.
+3. Delete user accounts.
+4. Activate or Deactivate user accounts based on their status.
+
+The application ensures secure user management and provides a seamless experience for both regular users and administrators.
 
 
 ## 📋 Table of Contents
