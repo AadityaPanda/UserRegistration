@@ -121,35 +121,52 @@ BASE_URL=http://localhost:3000
 4. **Create the Database**:
 Run the provided SQL queries to set up your MySQL database.
 ```sql
+-- Create the database
 CREATE DATABASE myform;
+
+-- Switch to the 'myform' database
 USE myform;
 
+-- Create the 'users' table
 CREATE TABLE users (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    firstname VARCHAR(30) NOT NULL,
-    middlename VARCHAR(30),
-    lastname VARCHAR(30) NOT NULL,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(64) NOT NULL,
-    mobile_no VARCHAR(15) NOT NULL, 
-    email VARCHAR(50) NOT NULL UNIQUE,
-    isAdmin BOOLEAN DEFAULT FALSE,
-    verified BOOLEAN DEFAULT FALSE
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- Unique identifier
+    firstname VARCHAR(30) NOT NULL, -- First name
+    middlename VARCHAR(30), -- Middle name (optional)
+    lastname VARCHAR(30) NOT NULL, -- Last name
+    username VARCHAR(50) NOT NULL UNIQUE, -- Unique username
+    password VARCHAR(64) NOT NULL, -- User's password (hashed)
+    mobile_no VARCHAR(15) NOT NULL, -- Mobile number
+    email VARCHAR(50) NOT NULL UNIQUE, -- Unique email address
+    isAdmin BOOLEAN DEFAULT FALSE, -- Flag for admin users
+    verified BOOLEAN DEFAULT FALSE, -- Verification status
+    active BOOLEAN DEFAULT TRUE -- Active status of the user
 );
 
+-- Make a specific user an admin
+UPDATE users SET isAdmin = TRUE WHERE username = 'admin';
+
+-- Create the 'email_verifications' table to store verification tokens
 CREATE TABLE email_verifications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNSIGNED NOT NULL,
-    token VARCHAR(255) NOT NULL,
-    expires_at DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for verification records
+    user_id INT UNSIGNED NOT NULL, -- Reference to the user
+    token VARCHAR(255) NOT NULL, -- Verification token
+    expires_at DATETIME NOT NULL, -- Expiration date of the token
+    FOREIGN KEY (user_id) REFERENCES users(id) -- Foreign key relation to 'users' table
 );
 
+-- Reset auto-increment to start from 1 for both tables
 ALTER TABLE email_verifications AUTO_INCREMENT = 1;
 ALTER TABLE users AUTO_INCREMENT = 1;
 
--- Example: Make a specific user an admin
-UPDATE users SET isAdmin = TRUE WHERE username = 'aaditya@23';
+-- Clean up by deleting all data in the 'email_verifications' and 'users' tables
+DELETE FROM email_verifications;
+DELETE FROM users;
+
+-- Retrieve all users
+SELECT * FROM users;
+
+-- Retrieve all email verification records
+SELECT * FROM email_verifications;
 ```
 
 5. **Run the Application**:
