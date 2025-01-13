@@ -33,7 +33,7 @@ The application ensures secure user management and provides a seamless experienc
 
 ## Tech Stack
 - **Backend**: Node.js, Express.js, MySQL
-- **Frontend**: EJS (for rendering views)
+- **Frontend**: React.js
 - **Email Service**: Nodemailer
 - **Database**: MySQL
 - **Environment Variables**: `.env` file for sensitive configurations
@@ -44,13 +44,17 @@ The application ensures secure user management and provides a seamless experienc
 ```plaintext
 backend/
 ├── config/
-│   └── db.js                    # MySQL database connection
+│   └── db.js                     # MySQL database connection
+├── middleware
+│   ├── isAdmin.js                # Middleware to verify whether user is an Admin
+│   └── requireLogin.js           # Middleware to check for user's session
 ├── node_modules/                 # Project dependencies
 ├── routes/                       # Backend route handlers
 │   ├── admin.js                  # Admin dashboard route
 │   ├── dashboard.js              # User dashboard route
 │   ├── home.js                   # Home route
 │   ├── login.js                  # Login route
+│   ├── logout.js                 # Logout route. Destroys existing sessions.
 │   └── signup.js                 # User signup route
 ├── services/
 │   └── emailService.js           # Email sending service
@@ -60,14 +64,43 @@ backend/
 ├── cleanup.js                    # Scheduled cleanup for unverified users
 └── server.js                     # Main server file
 
-frontend/
-├── admin.ejs                     # Admin dashboard page
-├── createUser.ejs                # Create user page
-├── dashboard.ejs                 # User dashboard page
-├── editUser.ejs                  # Edit user page
-├── home.ejs                      # Home page
-├── login.ejs                     # Login page
-└── signup.ejs                    # Signup page
+frontend/userreg
+├── src
+│   ├── App.jsx                   # Main React component
+│   ├── main.jsx                  # Entry point for React
+│   ├── components
+│   │   ├── AdminNavbar
+│   │   │   ├── AdminNavbar.css   # CSS for AdminNavbar
+│   │   │   └── AdminNavbar.jsx   # Admin Navbar component
+│   │   ├── AdminSidebar
+│   │   │   ├── AdminSidebar.css  # CSS for AdminSidebar
+│   │   │   └── AdminSidebar.jsx  # Admin Sidebar component
+│   │   └── Navbar
+│   │       ├── Navbar.css        # CSS for Navbar
+│   │       └── Navbar.jsx        # Navbar component
+│   ├── pages
+│   │   ├── Admin.jsx             # Admin dashboard page
+│   │   ├── CreateUser.jsx        # Create user page
+│   │   ├── Dashboard.jsx         # User dashboard page
+│   │   ├── EditUser.jsx          # Edit user page
+│   │   ├── Home.jsx              # Home page
+│   │   ├── Login.jsx             # Login page
+│   │   ├── ManageUsers.jsx       # Manage users page
+│   │   └── Signup.jsx            # Signup page
+│   └── styles
+│       ├── Admin.css             # Styling for Admin page
+│       ├── CreateUser.css        # Styling for CreateUser page
+│       ├── Dashboard.css         # Styling for Dashboard page
+│       ├── EditUser.css          # Styling for EditUser page
+│       ├── Home.css              # Styling for Home page
+│       ├── Login.css             # Styling for Login page
+│       ├── ManageUsers.css       # Styling for ManageUsers page
+│       └── Signup.css            # Styling for Signup page
+├── public                        # Public assets
+├── .gitignore                    # Git ignore file
+├── index.html                    # HTML entry point
+├── package.json                  # Project dependencies and scripts
+└── vite.config.js                # Vite configuration
 ```
 
 ## Setup
@@ -79,10 +112,13 @@ Before you begin, make sure you have the following installed:
 - **Node.js** (Version 14.x or above)
 - **MySQL**
 - **Git**
+- **React** (Install using `npm create vite@latest`)
 
 ## Installation
 
 Follow these steps to install and run the application:
+
+### Backend Setup
 
 1. **Clone the Repository**:
 ```bash
@@ -92,7 +128,7 @@ cd user-registration-app
 
 2. **Install Dependencies**:
 ```bash
-npm install
+npm i
 ```
 
 3. **Set up Environment Variables**:
@@ -124,6 +160,8 @@ SMTP_SECURE=false
 # Base URL
 BASE_URL=http://localhost:3000
 ```
+
+### Database Setup
 
 4. **Create the Database**:
 Run the provided SQL queries to set up your MySQL database.
@@ -182,16 +220,55 @@ npm start
 ```
 The application will now be accessible at `http://localhost:3000`.
 
+### Frontend Setup
+
+1. **Create the React frontend**:
+```bash
+cd frontend
+```
+Create a new Vite React App:
+```bash
+npm create vite@latest
+```
+
+2. **Navigate to the project folder**
+```bash
+cd your-project-name
+```
+
+3. **Install frontend dependencies**
+```bash
+npm i
+```
+
+4. **Create the build folder for development**
+```bash
+npm run build
+```
+
+5. **Run the development server**
+```bash
+npm run dev
+```
+You now have both the backend and frontend running on their respective ports:
+
+Backend: `http://localhost:3000`
+Frontend: `http://localhost:5173`
+Ensure the frontend and backend communicate effectively by updating API URLs in the frontend as needed.
+
 
 ## Routes Overview
 
-| Route       | Description                               |
-|-------------|-------------------------------------------|
-| `/`         | The landing page of the application.     |
-| `/signup`   | User registration page.                   |
-| `/login`    | User login page.                          |
-| `/dashboard`| User dashboard (post-login).              |
-| `/admin`    | Admin page to manage users.               |
+| Route               | Description                               |
+|---------------------|-------------------------------------------|
+| `/`                 | The landing page of the application.      |
+| `/signup`           | User registration page.                   |
+| `/login`            | User login page.                          |
+| `/dashboard`        | User dashboard (post-login).              |
+| `/admin`            | Admin home page.                          |
+| `/admin/user`       | Admin page to manage users.               |
+| `/admin/create`     |	Create new user (admin action).           |
+| `/admin/edit/:id`   |	Edit existing user details (admin action).|
 
 ## Scheduled Cleanup
 
