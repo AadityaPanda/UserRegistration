@@ -122,7 +122,7 @@ Follow these steps to install and run the application:
 
 1. **Clone the Repository**:
 ```bash
-git clone  https://github.com/Aaditya/User-Registration.git
+git clone  https://github.com/Aaditya/UserRegistration.git
 cd user-registration-app
 ```
 
