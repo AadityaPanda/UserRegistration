@@ -8,15 +8,20 @@ function Home() {
       <Navbar />
       <header className="hero-section">
         <div className="hero-content">
-          <h1>Welcome to User Registration Project</h1>
+          <h1>Welcome to the User Registration App</h1>
           <p>
-            Our project aims to revolutionize how users interact with technology. Explore our features, and let us help you achieve your goals.
+            A powerful platform that allows users to securely register, verify their email, and manage their accounts. Whether you're a new user or an administrator, we provide the tools you need to get started and maintain a seamless experience.
           </p>
           <div className="action-buttons">
             <a href="/signup" className="btn btn-primary">Get Started</a>
           </div>
         </div>
       </header>
+
+      {/* Footer */}
+      <footer className="home-footer">
+        <p>© 2025 Powered by Node.js, Express, and React. Ensuring a smooth and secure user experience.</p>
+      </footer>
     </div>
   );
 }
