@@ -5,49 +5,78 @@ require('dotenv').config();
 
 const router = express.Router();
 
-// Render login page
-router.get('/', (req, res) => {
-    res.render('login'); 
-});
-
-// Handle login form submission
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const { username, password } = req.body;
 
-    db.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
-        if (err) {
-            req.session.message = { type: 'error', text: 'Database error.' };
-            return res.redirect('/login');
-        }
+    try {
+        // Query the database for the user
+        const results = await new Promise((resolve, reject) => {
+            db.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(results);
+            });
+        });
 
         if (results.length > 0) {
             const user = results[0];
 
             // Check if user is active
             if (!user.active) {
-                req.session.message = { type: 'error', text: 'Your account is deactivated. Please contact the administrator.' };
-                return res.redirect('/login');
+                req.session.message = { type: 'warning', text: 'Your account is deactivated. Please contact the administrator.' };
+                return res.status(403).json({ success: false, error: 'Your account is deactivated. Please contact the administrator.' });
             }
 
             // Check if user is verified
             if (!user.verified) {
-                req.session.message = { type: 'error', text: 'Please verify your email before logging in.' };
-                return res.redirect('/login');
+                req.session.message = { type: 'warning', text: 'Please verify your email before logging in.' };
+                return res.status(403).json({ success: false, error: 'Please verify your email before logging in.' });
             }
 
             // Verify the password
             const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-            if (hashedPassword === user.password) {
-                req.session.user = user;
+            if (user.password === hashedPassword) {
+                
+                req.session.user = {
+                    id: user.id,
+                    username: user.username,
+                    firstname: user.firstname,  
+                    middlename: user.middlename, 
+                    lastname: user.lastname,     
+                    email: user.email,           
+                    mobile_no: user.mobile_no,   
+                    isAdmin: user.isAdmin,       
+                };
+            
                 req.session.message = { type: 'success', text: 'Login successful!' };
-                return res.redirect(user.isAdmin ? '/admin' : '/dashboard');
+                
+                return res.json({
+                    success: true,
+                    user: {
+                        id: user.id,
+                        username: user.username,
+                        firstname: user.firstname, 
+                        middlename: user.middlename, 
+                        lastname: user.lastname,     
+                        email: user.email,           
+                        mobile_no: user.mobile_no,   
+                        isAdmin: user.isAdmin,       
+                    }
+                });
+            } else {
+                req.session.message = { type: 'error', text: 'Invalid username or password.' };
+                return res.status(401).json({ success: false, error: 'Invalid username or password.' });
             }
+        } else {
+            req.session.message = { type: 'error', text: 'Invalid username or password.' };
+            return res.status(401).json({ success: false, error: 'Invalid username or password.' });
         }
-
-        // If no user found or password incorrect
-        req.session.message = { type: 'error', text: 'Invalid username/password.' };
-        res.redirect('/login');
-    });
+    } catch (err) {
+        console.error('Database error:', err);
+        req.session.message = { type: 'error', text: 'Database error.' };
+        return res.status(500).json({ success: false, error: 'Database error.' });
+    }
 });
 
 module.exports = router;

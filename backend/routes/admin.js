@@ -2,143 +2,102 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const crypto = require('crypto');
+const isAdmin = require('../middleware/requireLogin');
+const requireLogin = require('../middleware/requireLogin');
 
-// Middleware to check if the user is an admin
-const isAdmin = (req, res, next) => {
-    if (req.session.user && req.session.user.isAdmin) {
-        return next();
-    }
-    res.redirect('/login');
-};
+router.use(requireLogin);
+router.use(isAdmin);
 
-router.get('/search', isAdmin, (req, res) => {
+router.get('/search', (req, res) => {
     const searchQuery = req.query.query;
-
-    // Check if search query is empty
+  
     if (!searchQuery) {
-        return res.redirect('/admin');
+      return res.json({ users: [], message: 'Please enter a search query.' });
     }
-
+  
+    let query, params;
+  
     if (searchQuery.startsWith('#')) {
-        // Search by ID (Exact Match)
-        const searchId = searchQuery.substring(1); // Remove the `#`
-        db.query('SELECT * FROM users WHERE id = ?', [searchId], (err, users) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).send('Database error');
-            }
-
-            let message = users.length === 0 
-                ? 'User ID not found!' 
-                : 'User ID found!';
-            
-            req.session.message = { type: 'success', text: message };
-            res.render('admin', { users, message: req.session.message, query: searchQuery });
-        });
+      query = 'SELECT * FROM users WHERE id = ?';
+      params = [searchQuery.substring(1)];
     } else if (searchQuery.startsWith('@')) {
-        // Search by username (Exact Match)
-        const searchTerm = searchQuery.substring(1); // Remove the `@`
-        db.query(
-            `SELECT * FROM users WHERE 
-            username = ?`,
-            [searchTerm], // Exact match on username
-            (err, users) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).send('Database error');
-                }
-
-                let message = users.length === 0
-                    ? 'No matching users found!'
-                    : `${users.length} user(s) found!`;
-
-                req.session.message = { type: 'success', text: message };
-                res.render('admin', { users, message: req.session.message, query: searchQuery });
-            }
-        );
+      query = 'SELECT * FROM users WHERE username = ?';
+      params = [searchQuery.substring(1)];
     } else {
-        // General search across all fields with exact match
-        const searchTerm = searchQuery;
-        db.query(
-            `SELECT * FROM users WHERE 
-            firstname = ? OR 
-            middlename = ? OR 
-            lastname = ? OR 
-            email = ? OR 
-            mobile_no = ?`,
-            [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], // Exact match across fields
-            (err, users) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).send('Database error');
-                }
-
-                let message = users.length === 0
-                    ? 'No matching users found!'
-                    : `${users.length} user(s) found!`;
-
-                req.session.message = { type: 'success', text: message };
-                res.render('admin', { users, message: req.session.message, query: searchQuery });
-            }
-        );
+      query = `
+        SELECT * FROM users WHERE 
+        firstname LIKE ? OR 
+        middlename LIKE ? OR 
+        lastname LIKE ? OR 
+        email LIKE ? OR 
+        mobile_no LIKE ?`;
+      params = [ 
+        `%${searchQuery}%`, 
+        `%${searchQuery}%`, 
+        `%${searchQuery}%`, 
+        `%${searchQuery}%`, 
+        `%${searchQuery}%`
+      ];
     }
-});
+  
+    db.query(query, params, (err, users) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Database error' });
+      }
+  
+      const message = users.length === 0
+        ? 'No matching users found!'
+        : `${users.length} user(s) found!`;
+  
+      res.json({ users, message });
+    });
+  });  
 
-// Route for viewing users
-router.get('/', isAdmin, (req, res) => {
+// Get all users
+router.get('/user', (req, res) => {
     db.query('SELECT * FROM users', (err, users) => {
         if (err) {
             console.error(err);
+            req.session.message = { type: 'error', text: 'Database error' };
             return res.status(500).send('Database error');
         }
-        res.render('admin', { users, message: req.session.message });
-        delete req.session.message; 
+        res.json({ users });
     });
 });
 
-// Route to create a new user
-router.get('/create', isAdmin, (req, res) => {
-    res.render('createUser'); // Render the create user form
-});
-
-// Handle the create user form submission
-router.post('/create', isAdmin, (req, res) => {
+// Create user
+router.post('/create', (req, res) => {
     const { username, firstname, middlename, lastname, mobile_no, email, password } = req.body;
+    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+    const middleNameValue = middlename ? middlename.trim() : null;
 
-    // Check if username or email already exists
     db.query('SELECT * FROM users WHERE username = ? OR email = ?', [username, email], (err, existingUsers) => {
         if (err) {
             console.error(err);
-            req.session.message = { type: 'error', text: 'Error checking user existence' };
-            return res.redirect('/admin/create');
+            return res.status(500).json({ message: 'Error checking user existence' });
         }
 
         if (existingUsers.length > 0) {
-            req.session.message = { type: 'error', text: 'Username or email already exists. Please choose a different one.' };
-            return res.redirect('/admin/create');
+            return res.status(400).json({ message: 'Username or email already exists.' });
         }
 
-        const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-        const middleNameValue = middlename.trim() === '' ? null : middlename;
-
         db.query(
-            'INSERT INTO users (username, firstname, middlename, lastname, mobile_no, email, password, verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-            [username, firstname, middleNameValue, lastname, mobile_no, email, hashedPassword, 1], 
+            'INSERT INTO users (username, firstname, middlename, lastname, mobile_no, email, password, verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [username, firstname, middleNameValue, lastname, mobile_no, email, hashedPassword, 1],
             (err) => {
                 if (err) {
                     console.error(err);
-                    req.session.message = { type: 'error', text: 'Error creating user' };
-                    return res.redirect('/admin');
+                    return res.status(500).json({ message: 'Error creating user' });
                 }
-                req.session.message = { type: 'success', text: 'User created successfully!' };
-                res.redirect('/admin');
+                res.status(201).json({ message: 'User created successfully' });
             }
         );
     });
 });
 
-// Route to edit a user
-router.get('/edit/:id', isAdmin, (req, res) => {
+// Get a user by ID
+router.get('/edit/:id', (req, res) => {
     const userId = req.params.id;
 
     db.query('SELECT * FROM users WHERE id = ?', [userId], (err, user) => {
@@ -146,75 +105,95 @@ router.get('/edit/:id', isAdmin, (req, res) => {
             console.error(err);
             return res.status(500).send('Database error');
         }
+
         if (!user.length) {
-            return res.status(404).send('User not found');
+            return res.status(404).json({ message: 'User not found' });
         }
-        res.render('editUser', { user: user[0], message: req.session.message }); 
-        delete req.session.message; 
+
+        res.json({ user: user[0], status: 'success', message: 'User data loaded successfully!' });
     });
 });
 
-// Handle the user edit form submission
-router.post('/edit/:id', isAdmin, (req, res) => {
+// Update user
+router.put('/edit/:id', (req, res) => {
+    const userId = req.params.id;
     const { username, email, firstname, middlename, lastname, mobile_no } = req.body;
-    const userId = req.params.id;
+    console.log('Request body:', req.body);
+    console.log('User ID:', req.params.id);
 
-    const middleNameValue = middlename ? middlename : null;
 
-    db.query('UPDATE users SET username = ?, email = ?, firstname = ?, middlename = ?, lastname = ?, mobile_no = ? WHERE id = ?', 
-    [username, email, firstname, middleNameValue, lastname, mobile_no, userId], 
-    (err) => {
-        if (err) {
-            console.error(err);
-            req.session.message = { type: 'error', text: 'Error updating user' };
-            return res.redirect('/admin');
+    db.query(
+        'SELECT * FROM users WHERE id = ?',
+        [userId],
+        (err, results) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: 'Error fetching user details' });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const user = results[0];
+            const updatedUsername = username || user.username;
+            const updatedEmail = email || user.email;
+            const updatedFirstname = firstname || user.firstname;
+            const updatedMiddlename = middlename ? middlename.trim() : user.middlename;
+            const updatedLastname = lastname || user.lastname;
+            const updatedMobileNo = mobile_no || user.mobile_no;
+
+            db.query(
+                'UPDATE users SET username = ?, email = ?, firstname = ?, middlename = ?, lastname = ?, mobile_no = ? WHERE id = ?',
+                [updatedUsername, updatedEmail, updatedFirstname, updatedMiddlename, updatedLastname, updatedMobileNo, userId],
+                (err) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({ message: 'Error updating user' });
+                    }
+                    res.json({ message: 'User updated successfully' });
+                }
+            );
         }
-        req.session.message = { type: 'success', text: 'User details updated successfully!' };
-        res.redirect('/admin');
-    });
+    );
 });
 
-// Route to delete a user
-router.post('/delete/:id', isAdmin, (req, res) => {
+// Delete user
+router.delete('/user/:id', (req, res) => {
     const userId = req.params.id;
+
     db.query('DELETE FROM users WHERE id = ?', [userId], (err) => {
         if (err) {
             console.error(err);
-            req.session.message = { type: 'error', text: 'Error deleting user' };
-            return res.redirect('/admin');
+            return res.status(500).json({ message: 'Error deleting user' });
         }
-        req.session.message = { type: 'success', text: 'User deleted successfully!' };
-        res.redirect('/admin');
+        res.json({ message: 'User deleted successfully' });
     });
 });
 
-// Route to activate a user
-router.post('/activate/:id', isAdmin, (req, res) => {
+// Activate user
+router.patch('/user/:id/activate', (req, res) => {
     const userId = req.params.id;
 
     db.query('UPDATE users SET active = 1 WHERE id = ?', [userId], (err) => {
         if (err) {
             console.error(err);
-            req.session.message = { type: 'error', text: 'Error activating user' };
-            return res.redirect('/admin');
+            return res.status(500).json({ message: 'Error activating user' });
         }
-        req.session.message = { type: 'success', text: 'User activated successfully!' };
-        res.redirect('/admin');
+        res.json({ message: 'User activated successfully' });
     });
 });
 
-// Route to deactivate a user
-router.post('/deactivate/:id', isAdmin, (req, res) => {
+// Deactivate user
+router.patch('/user/:id/deactivate', (req, res) => {
     const userId = req.params.id;
 
     db.query('UPDATE users SET active = 0 WHERE id = ?', [userId], (err) => {
         if (err) {
             console.error(err);
-            req.session.message = { type: 'error', text: 'Error deactivating user' };
-            return res.redirect('/admin');
+            return res.status(500).json({ message: 'Error deactivating user' });
         }
-        req.session.message = { type: 'success', text: 'User deactivated successfully!' };
-        res.redirect('/admin');
+        res.json({ message: 'User deactivated successfully' });
     });
 });
 

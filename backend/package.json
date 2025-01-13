@@ -12,6 +12,7 @@
   "dependencies": {
     "@sendgrid/mail": "^8.1.4",
     "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
@@ -20,7 +21,6 @@
     "mysql2": "^3.11.5",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.16",
-    "nodemon": "^3.1.9",
-    "toastr": "^2.1.4"
+    "nodemon": "^3.1.9"
   }
 }

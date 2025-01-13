@@ -6,12 +6,6 @@ require('dotenv').config();
 
 const router = express.Router();
 
-// Render signup page
-router.get('/', (req, res) => {
-    res.render('signup');
-});
-
-// Handle signup form submission
 router.post('/', (req, res) => {
     const { firstname, middlename, lastname, username, password, verify_password, mobile_no, email } = req.body;
 

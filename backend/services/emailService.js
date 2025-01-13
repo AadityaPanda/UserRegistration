@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();  
 
-// Configure the transporter using the SMTP details from .env
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
@@ -12,7 +11,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Function to send verification email
 const sendVerificationEmail = (userEmail, token, userFirstname) => {
   const verificationLink = `${process.env.BASE_URL}/signup/verify-email?token=${token}`;
 
