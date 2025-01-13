@@ -64,7 +64,7 @@ backend/
 ├── cleanup.js                    # Scheduled cleanup for unverified users
 └── server.js                     # Main server file
 
-frontend/userreg
+frontend/your-project-name
 ├── src
 │   ├── App.jsx                   # Main React component
 │   ├── main.jsx                  # Entry point for React
