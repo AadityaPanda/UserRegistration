@@ -200,7 +200,6 @@ CREATE TABLE users (
 UPDATE users SET isAdmin = TRUE WHERE username = 'admin';
 
 -- Reset auto-increment to start from 1 for both tables
-ALTER TABLE email_verifications AUTO_INCREMENT = 1;
 ALTER TABLE users AUTO_INCREMENT = 1;
 
 -- Clean up by deleting all data in the 'users' tables
