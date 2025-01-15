@@ -9,7 +9,6 @@ const signupRoutes = require('./routes/signup');
 const dashboardRoutes = require('./routes/dashboard');
 const adminRoutes = require('./routes/admin');
 const logoutRoutes = require('./routes/logout');
-require('./cleanup'); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
