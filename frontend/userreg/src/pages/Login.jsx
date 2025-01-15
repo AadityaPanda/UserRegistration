@@ -49,36 +49,36 @@ function Login() {
   };
 
   return (
-    <div className="login-page">
-      <Link to="/" className="logo-link">
-        <img src={logo} alt="Bitchief Technology Services Pvt Ltd" className="logo" />
-      </Link>
-      <div className="container login-container">
-        <h1>Login</h1>
-        <form onSubmit={handleSubmit} className="form-login">
-          <div className="form-group">
+    <div className="login-page-bts">
+      <div className="container login-container-bts">
+        <Link to="/" className="logo-link-bts">
+          <img src={logo} alt="Bitchief Technology Services Pvt Ltd" className="logo-bts" />
+        </Link>
+        <h1 className="login-title-bts">Login</h1>
+        <form onSubmit={handleSubmit} className="form-login-bts">
+          <div className="form-group-bts">
             <input
               type="text"
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="form-control"
+              className="form-control-bts"
             />
           </div>
-          <div className="form-group">
+          <div className="form-group-bts">
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="form-control"
+              className="form-control-bts"
             />
           </div>
-          <button type="submit" className="btn btn-primary btn-block">
+          <button type="submit" className="btn btn-primary-bts btn-block-bts">
             Login
           </button>
         </form>
-        <div className="signup-link">
+        <div className="signup-link-bts">
           <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
         </div>
       </div>

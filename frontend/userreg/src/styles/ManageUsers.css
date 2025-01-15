@@ -4,8 +4,8 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
-  max-height: 760px; /* Limit the height */
-  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 760px; 
+  overflow-y: auto; 
 }
 
 .manage-users-container h1 {
@@ -24,10 +24,8 @@
   border-radius: 4px;
 }
 
-.manage-users-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.table-bordered th, .table-bordered td {
+  border: 1px solid #ddd;
 }
 
 .manage-users-item {
@@ -61,58 +59,47 @@
   color: #333;
 }
 
-.manage-users-buttons {
+.dropdown-menu .dropdown-item {
+  padding: 10px 15px;
+  color: black;
+  background-color: transparent;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+.table td, .table th {
+  padding: 12px;
+  text-align: left;
+}
+
+.table-bordered td, .table-bordered th {
+  border: 1px solid #ddd;
+}
+
+.pagination-container {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 1rem;
 }
 
-.manage-users-buttons .btn {
-  font-size: 0.85rem;
+.pagination-button {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
   padding: 5px 10px;
-  border-radius: 4px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
-.manage-users-buttons .btn-secondary {
-  background-color: #6c757d;
-  border: 1px solid #6c757d;
-  color: #fff;
+.pagination-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
-.manage-users-buttons .btn-secondary:hover {
-  background-color: #5a6268;
-  border-color: #545b62;
-}
-
-.manage-users-buttons .btn-danger {
-  background-color: #dc3545;
-  border: 1px solid #dc3545;
-  color: #fff;
-}
-
-.manage-users-buttons .btn-danger:hover {
-  background-color: #c82333;
-  border-color: #bd2130;
-}
-
-.manage-users-buttons .btn-warning {
-  background-color: #ffc107;
-  border: 1px solid #ffc107;
-  color: #212529;
-}
-
-.manage-users-buttons .btn-warning:hover {
-  background-color: #e0a800;
-  border-color: #d39e00;
-}
-
-.manage-users-buttons .btn-success {
-  background-color: #28a745;
-  border: 1px solid #28a745;
-  color: #fff;
-}
-
-.manage-users-buttons .btn-success:hover {
-  background-color: #218838;
-  border-color: #1e7e34;
+.pagination-button i {
+  font-size: 18px;
 }

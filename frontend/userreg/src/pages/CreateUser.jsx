@@ -130,7 +130,7 @@ function CreateUser() {
           {isLoading ? 'Creating...' : 'Create User'}
         </button>
         <Link to="/admin/user" className="btn btn-secondary ml-2">
-          Back to Users List
+          Back
         </Link>
       </form>
     </div>

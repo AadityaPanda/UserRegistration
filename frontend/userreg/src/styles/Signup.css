@@ -1,68 +1,66 @@
-.signup-page {
-    background: linear-gradient(135deg, #6f86d6, #48c6ef);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-  }
-  
-  .signup-container {
-    width: 400px;
-    background-color: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
-  }
-  
-  /* Form fields */
-  .form-signup .form-group {
-    margin-bottom: 1.25rem;
-  }
-  
-  .form-signup .form-control {
-    width: 93%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-  }
-  
-  .form-signup .form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
-  }
+.signup-page-bts {
+  background: linear-gradient(135deg, #6f86d6, #48c6ef);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  position: relative;
+}
 
-  .btn-block {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 4px;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    color: #ffffff;
-    border: none;
-  }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
+.signup-container-bts {
+  width: 500px;
+  background-color: #ffffff;
+  padding: 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
 
-  .logo-link {
-    position: absolute;
-    top: 20px; 
-    left: 20px; 
-    z-index: 1000; 
-  }
-  
-  .logo {
-    height: 50px; 
-  }
-  
-  .signup-page {
-    position: relative;
-  }
+.logo-link-bts {
+  display: block;
+  margin: 0 auto 2rem auto; 
+}
+
+.logo-bts {
+  height: 50px; 
+}
+
+.form-signup-bts .form-group-bts {
+  margin-bottom: 1.25rem;
+}
+
+.form-signup-bts .form-control-bts {
+  width: 93%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.form-signup-bts .form-control-bts:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+.btn-block-bts {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.btn-primary-bts {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-primary-bts:hover {
+  background-color: #0056b3;
+}
+
+.login-link-bts {
+  margin-top: 1rem;
+}

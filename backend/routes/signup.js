@@ -11,26 +11,22 @@ router.post('/', (req, res) => {
 
     // Check if passwords match
     if (password !== verify_password) {
-        req.session.message = { type: 'error', text: "Passwords don't match." };
-        return res.redirect('/signup');
+        return res.status(400).json({ message: "Passwords don't match." });
     }
 
     // Validate mobile number
     if (mobile_no.length !== 10) {
-        req.session.message = { type: 'error', text: 'Mobile number must be 10 digits.' };
-        return res.redirect('/signup');
+        return res.status(400).json({ message: 'Mobile number must be 10 digits.' });
     }
 
     // Check if the username already exists
     db.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
         if (err) {
-            req.session.message = { type: 'error', text: 'Database error.' };
-            return res.redirect('/signup');
+            return res.status(500).json({ message: 'Database error.' });
         }
 
         if (results.length > 0) {
-            req.session.message = { type: 'error', text: 'Username already exists.' };
-            return res.redirect('/signup');
+            return res.status(400).json({ message: 'Username already exists.' });
         }
 
         // Hash the password before storing it
@@ -39,11 +35,11 @@ router.post('/', (req, res) => {
         // Insert the user into the database with active status set to true
         db.query(
             'INSERT INTO users (firstname, middlename, lastname, username, password, mobile_no, email, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [firstname, middlename, lastname, username, hashedPassword, mobile_no, email, true], // Set `active` to `true`
+            [firstname, middlename, lastname, username, hashedPassword, mobile_no, email, true],
             (err, result) => {
                 if (err) {
-                    req.session.message = { type: 'error', text: 'Error occurred during registration.' };
-                    return res.redirect('/signup');
+                    console.error('Database query error:', err);  // Log the error to the console
+                    return res.status(500).json({ message: 'Error occurred during registration.' });
                 }
 
                 // Generate a verification token
@@ -52,19 +48,19 @@ router.post('/', (req, res) => {
 
                 // Insert the verification token into the database
                 db.query(
-                    'INSERT INTO email_verifications (user_id, token, expires_at) VALUES (?, ?, ?)',
-                    [result.insertId, token, expiresAt],
+                    'UPDATE users SET token = ?, expires_at = ? WHERE id = ?',
+                    [token, expiresAt, result.insertId], // `result.insertId` refers to the user ID
                     (err) => {
                         if (err) {
-                            req.session.message = { type: 'error', text: 'Error saving verification token.' };
-                            return res.redirect('/signup');
+                            return res.status(500).json({ message: 'Error saving verification token.' });
                         }
-
+                
                         // Send verification email
                         sendVerificationEmail(email, token, firstname);
-
-                        req.session.message = { type: 'success', text: 'Registration successful! Please check your email for verification.' };
-                        res.redirect('/login');
+                
+                        return res.status(200).json({
+                            message: 'Registration successful! Please check your email for verification.',
+                        });
                     }
                 );
             }
@@ -76,33 +72,29 @@ router.post('/', (req, res) => {
 router.get('/verify-email', (req, res) => {
     const { token } = req.query;
 
-    db.query('SELECT * FROM email_verifications WHERE token = ?', [token], (err, results) => {
+    db.query('SELECT * FROM users WHERE token = ?', [token], (err, results) => {
         if (err || results.length === 0) {
             console.error('Token lookup error:', err || 'No results');
-            req.session.message = { type: 'error', text: 'Invalid or expired token.' };
-            return res.redirect('/login');
+            return res.status(400).json({ message: 'Invalid or expired token.' });
         }
 
-        const verification = results[0];
+        const user = results[0];
         const currentTime = new Date();
 
-        if (currentTime > verification.expires_at) {
-            req.session.message = { type: 'error', text: 'Verification link has expired.' };
-            return res.redirect('/login');
+        if (currentTime > user.expires_at) {
+            return res.status(400).json({ message: 'Verification link has expired.' });
         }
 
-        db.query('UPDATE users SET verified = 1 WHERE id = ?', [verification.user_id], (err) => {
+        db.query('UPDATE users SET verified = 1 WHERE id = ?', [user.id], (err) => {
             if (err) {
                 console.error('Error updating user verification:', err);
-                req.session.message = { type: 'error', text: 'Error verifying user.' };
-                return res.redirect('/login');
+                return res.status(500).json({ message: 'Error verifying user.' });
             }
 
-            db.query('DELETE FROM email_verifications WHERE token = ?', [token], (deleteErr) => {
-                if (deleteErr) console.error('Error deleting token:', deleteErr);
+            db.query('UPDATE users SET token = NULL, expires_at = NULL WHERE id = ?', [user.id], (deleteErr) => {
+                if (deleteErr) console.error('Error clearing token:', deleteErr);
 
-                req.session.message = { type: 'success', text: 'Email verified successfully!' };
-                res.redirect('/login');
+                return res.status(200).json({ message: 'Email verified successfully!' });
             });
         });
     });
