@@ -199,28 +199,15 @@ CREATE TABLE users (
 -- Make a specific user an admin
 UPDATE users SET isAdmin = TRUE WHERE username = 'admin';
 
--- Create the 'email_verifications' table to store verification tokens
-CREATE TABLE email_verifications (
-    id INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for verification records
-    user_id INT UNSIGNED NOT NULL, -- Reference to the user
-    token VARCHAR(255) NOT NULL, -- Verification token
-    expires_at DATETIME NOT NULL, -- Expiration date of the token
-    FOREIGN KEY (user_id) REFERENCES users(id) -- Foreign key relation to 'users' table
-);
-
 -- Reset auto-increment to start from 1 for both tables
 ALTER TABLE email_verifications AUTO_INCREMENT = 1;
 ALTER TABLE users AUTO_INCREMENT = 1;
 
--- Clean up by deleting all data in the 'email_verifications' and 'users' tables
-DELETE FROM email_verifications;
+-- Clean up by deleting all data in the 'users' tables
 DELETE FROM users;
 
 -- Retrieve all users
 SELECT * FROM users;
-
--- Retrieve all email verification records
-SELECT * FROM email_verifications;
 ```
 
 5. **Run the Application**:
