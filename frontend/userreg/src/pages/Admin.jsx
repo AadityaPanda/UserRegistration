@@ -16,7 +16,7 @@ function Admin() {
   // Handle logout
   const handleLogout = () => {
     localStorage.removeItem('admin');
-    navigate('/login');
+    navigate('/');
   };
 
   // Check if admin is logged in

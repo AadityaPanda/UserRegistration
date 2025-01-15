@@ -27,3 +27,9 @@
   .sidebar-menu-item:hover {
     background-color: #34495e;
   }
+
+  .logo {
+    width: 200px; 
+    height: auto; 
+  }
+  
