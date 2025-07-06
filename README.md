@@ -1,300 +1,461 @@
-﻿# USER REGISTRATION APP
+# 🔐 User Registration App
+
+<div align="center">
 
 ![Screenshot 2025-01-13 144947](https://github.com/user-attachments/assets/a9e8af7a-d56b-4f82-805a-4a5e73796090)
 
-This is a Node.js-based user registration application that allows users to sign up, receive email verification, and log in. It includes user registration functionality with email verification using Nodemailer for sending verification emails. Additionally, the application features an **Admin Dashboard**, where administrators can manage user accounts. The admin can:
+**A comprehensive Node.js user registration system with admin dashboard and email verification**
 
-1. Create new user accounts.
-2. Edit existing user details.
-3. Delete user accounts.
-4. Activate or Deactivate user accounts based on their status.
+[![Node.js](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)](https://expressjs.com/)
+[![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
+[![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com/)
+[![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/Overview.en.html)
 
-The application ensures secure user management and provides a seamless experience for both regular users and administrators.
+</div>
 
+---
+
+## 📖 Overview
+
+This is a full-stack Node.js application that provides a complete user registration system with email verification and an administrative dashboard. The application offers secure user management capabilities, allowing both regular users to register and authenticate, while providing administrators with comprehensive user management tools.
+
+### 🎯 Key Capabilities
+
+The application ensures secure user management and provides a seamless experience for both regular users and administrators through:
+
+- **User Registration & Authentication** - Complete signup and login workflow
+- **Email Verification System** - Automated email verification using Nodemailer
+- **Administrative Dashboard** - Comprehensive user management interface
+- **CRUD Operations** - Full create, read, update, and delete functionality
+- **User Status Management** - Activate/deactivate user accounts
+- **Automated Cleanup** - Scheduled removal of unverified accounts
+
+---
 
 ## 📋 Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Setup](#setup)
-- [Installation](#installation)
-- [Routes Overview](#routes-overview)
-- [Scheduled Cleanup](#scheduled-cleanup)
-- [License](#license)
-- [Contributing](#contributing)
-- [Contact](#contact)
 
+- [🚀 Features](#-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [📁 Project Structure](#-project-structure)
+- [⚙️ Setup](#️-setup)
+- [🔧 Installation](#-installation)
+- [🛣️ Routes Overview](#️-routes-overview)
+- [🧹 Scheduled Cleanup](#-scheduled-cleanup)
+- [📄 License](#-license)
+- [🤝 Contributing](#-contributing)
+- [📞 Contact](#-contact)
 
-## Features
-- **User Registration**: Users can register with their details.
-- **Email Verification**: Sends a verification email with a link to activate the account.
-- **Login Functionality**: Users can log in after verifying their email.
-- **Admin Dashboard**: Admins can manage users.
-- **Basic CRUD operations**: For user management.
+---
 
+## 🚀 Features
 
-## Tech Stack
-- **Backend**: Node.js, Express.js 
-- **Frontend**: React.js
-- **Email Service**: Nodemailer
-- **Database**: MySQL
-- **Environment Variables**: `.env` file for sensitive configurations
+<table>
+<tr>
+<td width="50%">
 
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
-![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
-![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
-![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) 
+### 👥 User Features
+- ✅ **User Registration** - Secure account creation
+- ✅ **Email Verification** - Automated verification emails
+- ✅ **User Authentication** - Login/logout functionality
+- ✅ **User Dashboard** - Personal account interface
 
+</td>
+<td width="50%">
 
-## Project Structure
+### 👨‍💼 Admin Features
+- ✅ **Admin Dashboard** - Comprehensive management interface
+- ✅ **User Management** - Create, edit, delete users
+- ✅ **Account Control** - Activate/deactivate accounts
+- ✅ **User Overview** - View all registered users
 
-```plaintext
-backend/
-├── config/
-│   └── db.js                     # MySQL database connection
-├── middleware
-│   ├── isAdmin.js                # Middleware to verify whether user is an Admin
-│   └── requireLogin.js           # Middleware to check for user's session
-├── node_modules/                 # Project dependencies
-├── routes/                       # Backend route handlers
-│   ├── admin.js                  # Admin dashboard route
-│   ├── dashboard.js              # User dashboard route
-│   ├── home.js                   # Home route
-│   ├── login.js                  # Login route
-│   ├── logout.js                 # Logout route. Destroys existing sessions.
-│   └── signup.js                 # User signup route
-├── services/
-│   └── emailService.js           # Email sending service
-├── .env                          # Environment variables (ignored in Git)
-├── .env.example                  # Template for environment variables
-├── .gitignore                    # Git ignore file
-├── cleanup.js                    # Scheduled cleanup for unverified users
-└── server.js                     # Main server file
+</td>
+</tr>
+</table>
 
-frontend/your-project-name
-├── src
-│   ├── App.jsx                   # Main React component
-│   ├── main.jsx                  # Entry point for React
-│   ├── components
-│   │   ├── AdminNavbar
-│   │   │   ├── AdminNavbar.css   # CSS for AdminNavbar
-│   │   │   └── AdminNavbar.jsx   # Admin Navbar component
-│   │   ├── AdminSidebar
-│   │   │   ├── AdminSidebar.css  # CSS for AdminSidebar
-│   │   │   └── AdminSidebar.jsx  # Admin Sidebar component
-│   │   └── Navbar
-│   │       ├── Navbar.css        # CSS for Navbar
-│   │       └── Navbar.jsx        # Navbar component
-│   ├── pages
-│   │   ├── Admin.jsx             # Admin dashboard page
-│   │   ├── CreateUser.jsx        # Create user page
-│   │   ├── Dashboard.jsx         # User dashboard page
-│   │   ├── EditUser.jsx          # Edit user page
-│   │   ├── Home.jsx              # Home page
-│   │   ├── Login.jsx             # Login page
-│   │   ├── ManageUsers.jsx       # Manage users page
-│   │   └── Signup.jsx            # Signup page
-│   └── styles
-│       ├── Admin.css             # Styling for Admin page
-│       ├── CreateUser.css        # Styling for CreateUser page
-│       ├── Dashboard.css         # Styling for Dashboard page
-│       ├── EditUser.css          # Styling for EditUser page
-│       ├── Home.css              # Styling for Home page
-│       ├── Login.css             # Styling for Login page
-│       ├── ManageUsers.css       # Styling for ManageUsers page
-│       └── Signup.css            # Styling for Signup page
-├── public                        # Public assets
-├── .gitignore                    # Git ignore file
-├── index.html                    # HTML entry point
-├── package.json                  # Project dependencies and scripts
-└── vite.config.js                # Vite configuration
+---
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+### Backend
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![Nodemailer](https://img.shields.io/badge/Nodemailer-0F1419?style=for-the-badge&logo=nodemailer&logoColor=white)
+
+### Frontend
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+
+### Database & Tools
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+
+</div>
+
+---
+
+## 📁 Project Structure
+
+<details>
+<summary>🔍 Click to expand project structure</summary>
+
+```
+📦 UserRegistration
+├── 📁 backend/
+│   ├── 📁 config/
+│   │   └── 📄 db.js                     # MySQL database connection
+│   ├── 📁 middleware/
+│   │   ├── 📄 isAdmin.js                # Admin verification middleware
+│   │   └── 📄 requireLogin.js           # Session check middleware
+│   ├── 📁 routes/
+│   │   ├── 📄 admin.js                  # Admin dashboard routes
+│   │   ├── 📄 dashboard.js              # User dashboard routes
+│   │   ├── 📄 home.js                   # Home page routes
+│   │   ├── 📄 login.js                  # Authentication routes
+│   │   ├── 📄 logout.js                 # Session management
+│   │   └── 📄 signup.js                 # User registration routes
+│   ├── 📁 services/
+│   │   └── 📄 emailService.js           # Email sending service
+│   ├── 📄 .env                          # Environment variables
+│   ├── 📄 .env.example                  # Environment template
+│   ├── 📄 cleanup.js                    # Automated cleanup task
+│   └── 📄 server.js                     # Main server file
+│
+└── 📁 frontend/your-project-name/
+    ├── 📁 src/
+    │   ├── 📄 App.jsx                   # Main React component
+    │   ├── 📄 main.jsx                  # React entry point
+    │   ├── 📁 components/
+    │   │   ├── 📁 AdminNavbar/
+    │   │   │   ├── 📄 AdminNavbar.css
+    │   │   │   └── 📄 AdminNavbar.jsx
+    │   │   ├── 📁 AdminSidebar/
+    │   │   │   ├── 📄 AdminSidebar.css
+    │   │   │   └── 📄 AdminSidebar.jsx
+    │   │   └── 📁 Navbar/
+    │   │       ├── 📄 Navbar.css
+    │   │       └── 📄 Navbar.jsx
+    │   ├── 📁 pages/
+    │   │   ├── 📄 Admin.jsx             # Admin dashboard
+    │   │   ├── 📄 CreateUser.jsx        # User creation
+    │   │   ├── 📄 Dashboard.jsx         # User dashboard
+    │   │   ├── 📄 EditUser.jsx          # User editing
+    │   │   ├── 📄 Home.jsx              # Landing page
+    │   │   ├── 📄 Login.jsx             # Authentication
+    │   │   ├── 📄 ManageUsers.jsx       # User management
+    │   │   └── 📄 Signup.jsx            # Registration
+    │   └── 📁 styles/
+    │       ├── 📄 Admin.css
+    │       ├── 📄 CreateUser.css
+    │       ├── 📄 Dashboard.css
+    │       ├── 📄 EditUser.css
+    │       ├── 📄 Home.css
+    │       ├── 📄 Login.css
+    │       ├── 📄 ManageUsers.css
+    │       └── 📄 Signup.css
+    ├── 📁 public/
+    ├── 📄 index.html
+    ├── 📄 package.json
+    └── 📄 vite.config.js
 ```
 
-## Setup
+</details>
 
-### Prerequisites
+---
 
-Before you begin, make sure you have the following installed:
+## ⚙️ Setup
 
-- **Node.js** (Version 14.x or above)
-- **MySQL**
-- **Git**
-- **React** (Install using `npm create vite@latest`)
+### 📋 Prerequisites
 
-## Installation
+Before you begin, ensure you have the following installed:
 
-Follow these steps to install and run the application:
+| Requirement | Version | Description |
+|-------------|---------|-------------|
+| ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white) | 14.x or above | JavaScript runtime |
+| ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) | Latest | Database server |
+| ![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white) | Latest | Version control |
+| ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB) | Latest | Frontend framework |
 
-### Backend Setup
+---
 
-1. **Clone the Repository**:
+## 🔧 Installation
+
+### 🖥️ Backend Setup
+
+<details>
+<summary>📥 Step 1: Clone the Repository</summary>
+
 ```bash
 git clone https://github.com/AadityaPanda/UserRegistration.git
 cd backend
 ```
 
-2. **Install Dependencies**:
+</details>
+
+<details>
+<summary>📦 Step 2: Install Dependencies</summary>
+
 ```bash
-npm i
+npm install
 ```
 
-3. **Set up Environment Variables**:
-Create a `.env` file by copying the `.env.example` file and editing it with your configuration details.
+</details>
+
+<details>
+<summary>🔧 Step 3: Environment Configuration</summary>
+
+Create your environment file:
 ```bash
 cp .env.example .env
 ```
-Edit the `.env` file and update the placeholders with your actual configuration details:
-```plaintext
-# Database Configuration
+
+Configure your `.env` file with the following variables:
+
+```env
+# 🗄️ Database Configuration
 DB_HOST=your_database_host
 DB_USER=your_database_user
 DB_PASSWORD=your_database_password
 DB_NAME=your_database_name
 
-# Session Secret
+# 🔐 Session Configuration
 SESSION_SECRET=your_session_secret
 
-# Server Configuration
+# 🌐 Server Configuration
 PORT=3000
+BASE_URL=http://localhost:3000
 
-# SMTP Configuration
+# 📧 SMTP Configuration
 SMTP_HOST=your_smtp_host
 SMTP_PORT=587
 EMAIL_USER=your_email_address
 EMAIL_PASS=your_email_password
 SMTP_SECURE=false
-
-# Base URL
-BASE_URL=http://localhost:3000
 ```
 
-### Database Setup
+</details>
 
-4. **Create the Database**:
-Run the provided SQL queries to set up your MySQL database.
+### 🗄️ Database Setup
+
+<details>
+<summary>📊 Step 4: Database Configuration</summary>
+
+Execute the following SQL commands to set up your database:
+
 ```sql
 -- Create the database
 CREATE DATABASE myform;
 
--- Switch to the 'myform' database
+-- Switch to the database
 USE myform;
 
--- Create the 'users' table
+-- Create the users table
 CREATE TABLE users (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- Unique identifier
-    firstname VARCHAR(30) NOT NULL, -- First name
-    middlename VARCHAR(30), -- Middle name (optional)
-    lastname VARCHAR(30) NOT NULL, -- Last name
-    username VARCHAR(50) NOT NULL UNIQUE, -- Unique username
-    password VARCHAR(64) NOT NULL, -- User's password (hashed)
-    mobile_no VARCHAR(15) NOT NULL, -- Mobile number
-    email VARCHAR(50) NOT NULL UNIQUE, -- Unique email address
-    isAdmin BOOLEAN DEFAULT FALSE, -- Flag for admin users
-    verified BOOLEAN DEFAULT FALSE, -- Verification status
-    active BOOLEAN DEFAULT TRUE -- Active status of the user
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    firstname VARCHAR(30) NOT NULL,
+    middlename VARCHAR(30),
+    lastname VARCHAR(30) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(64) NOT NULL,
+    mobile_no VARCHAR(15) NOT NULL,
+    email VARCHAR(50) NOT NULL UNIQUE,
+    isAdmin BOOLEAN DEFAULT FALSE,
+    verified BOOLEAN DEFAULT FALSE,
+    active BOOLEAN DEFAULT TRUE
 );
 
--- Make a specific user an admin
+-- Create an admin user
 UPDATE users SET isAdmin = TRUE WHERE username = 'admin';
 
--- Reset auto-increment to start from 1 for both tables
+-- Reset auto-increment
 ALTER TABLE users AUTO_INCREMENT = 1;
-
--- Clean up by deleting all data in the 'users' tables
-DELETE FROM users;
-
--- Retrieve all users
-SELECT * FROM users;
 ```
 
-5. **Run the Application**:
+</details>
+
+<details>
+<summary>🚀 Step 5: Start the Backend Server</summary>
+
 ```bash
 npm start
 ```
-The application will now be accessible at `http://localhost:3000`.
 
-### Frontend Setup
+✅ Backend server will be running at `http://localhost:3000`
 
-1. **Create the React frontend**:
+</details>
+
+### 🎨 Frontend Setup
+
+<details>
+<summary>⚛️ Step 1: Create React Frontend</summary>
+
 ```bash
 cd frontend
-```
-Create a new Vite React App:
-```bash
-npm create vite@latest
-```
-
-2. **Navigate to the project folder**
-```bash
+npm create vite@latest your-project-name -- --template react
 cd your-project-name
 ```
 
-3. **Install frontend dependencies**
+</details>
+
+<details>
+<summary>📦 Step 2: Install Frontend Dependencies</summary>
+
 ```bash
-npm i
+npm install
 ```
 
-4. **Create the build folder for development**
+</details>
+
+<details>
+<summary>🏗️ Step 3: Build and Run</summary>
+
 ```bash
+# Create production build
 npm run build
-```
 
-5. **Run the development server**
-```bash
+# Start development server
 npm run dev
 ```
-You now have both the backend and frontend running on their respective ports:
 
-Backend: `http://localhost:3000`
-Frontend: `http://localhost:5173`
-Ensure the frontend and backend communicate effectively by updating API URLs in the frontend as needed.
+✅ Frontend will be running at `http://localhost:5173`
 
+</details>
 
-## Routes Overview
+---
 
-| Route               | Description                               |
-|---------------------|-------------------------------------------|
-| `/`                 | The landing page of the application.      |
-| `/signup`           | User registration page.                   |
-| `/login`            | User login page.                          |
-| `/dashboard`        | User dashboard (post-login).              |
-| `/admin`            | Admin home page.                          |
-| `/admin/user`       | Admin page to manage users.               |
-| `/admin/create`     |	Create new user (admin action).           |
-| `/admin/edit/:id`   |	Edit existing user details (admin action).|
+## 🛣️ Routes Overview
 
-## Scheduled Cleanup
+<table>
+<thead>
+<tr>
+<th>🌐 Route</th>
+<th>📝 Description</th>
+<th>🔒 Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td>🏠 Landing page</td>
+<td>🌍 Public</td>
+</tr>
+<tr>
+<td><code>/signup</code></td>
+<td>📝 User registration</td>
+<td>🌍 Public</td>
+</tr>
+<tr>
+<td><code>/login</code></td>
+<td>🔐 User authentication</td>
+<td>🌍 Public</td>
+</tr>
+<tr>
+<td><code>/dashboard</code></td>
+<td>👤 User dashboard</td>
+<td>🔒 Authenticated</td>
+</tr>
+<tr>
+<td><code>/admin</code></td>
+<td>👨‍💼 Admin homepage</td>
+<td>🛡️ Admin only</td>
+</tr>
+<tr>
+<td><code>/admin/user</code></td>
+<td>👥 User management</td>
+<td>🛡️ Admin only</td>
+</tr>
+<tr>
+<td><code>/admin/create</code></td>
+<td>➕ Create new user</td>
+<td>🛡️ Admin only</td>
+</tr>
+<tr>
+<td><code>/admin/edit/:id</code></td>
+<td>✏️ Edit user details</td>
+<td>🛡️ Admin only</td>
+</tr>
+</tbody>
+</table>
 
-The app includes a scheduled cleanup task (`cleanup.js`) that runs every hour to remove unverified users from the database. This is done by deleting records where the verification token has expired and the user is still unverified.
+---
 
-## License
+## 🧹 Scheduled Cleanup
 
-This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute it in your projects.
+The application includes an automated cleanup system (`cleanup.js`) that:
 
-## Contributing
+- 🕐 **Runs every hour** to maintain database hygiene
+- 🗑️ **Removes unverified users** whose verification tokens have expired
+- 📧 **Prevents spam registrations** by cleaning up abandoned accounts
+- ⚡ **Optimizes database performance** by removing inactive records
 
-Contributions are welcome! Here's how you can help:
-1. Fork the repository.
-2. Create a new branch:
-```bash
-git checkout -b feature/YourFeatureName
-```
-3. Commit your changes:
-```bash
-git commit -m "Add YourFeatureName"
-```
-4. Push to the branch:
-```bash
-git push origin feature/YourFeatureName
-```
-5. Open a pull request.
+This ensures your database stays clean and performs optimally over time.
 
-Check the [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+---
 
-## Contact
+## 📄 License
 
-- **Developer**: Aaditya Panda  
-- **Email**: [aadityapanda23@gmail.com](mailto:aadityapanda23@gmail.com)  
-- **GitHub**: [AadityaPanda](https://github.com/AadityaPanda)
+<div align="center">
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+
+**This project is licensed under the MIT License**
+
+Feel free to use, modify, and distribute it in your projects.
+
+</div>
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help improve this project:
+
+### 🔧 Development Workflow
+
+1. **🍴 Fork the repository**
+2. **🌿 Create a feature branch**
+   ```bash
+   git checkout -b feature/YourFeatureName
+   ```
+3. **💾 Commit your changes**
+   ```bash
+   git commit -m "Add YourFeatureName"
+   ```
+4. **📤 Push to the branch**
+   ```bash
+   git push origin feature/YourFeatureName
+   ```
+5. **🔄 Open a pull request**
+
+### 📋 Contribution Guidelines
+
+- 🧪 Ensure all tests pass before submitting
+- 📝 Update documentation for new features
+- 🎨 Follow the existing code style
+- 💬 Provide clear commit messages
+
+Check [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+---
+
+## 📞 Contact
+
+<div align="center">
+
+**👨‍💻 Aaditya Panda**
+
+[![Email](https://img.shields.io/badge/Email-aadityapanda23@gmail.com-red?style=for-the-badge&logo=gmail&logoColor=white)](mailto:aadityapanda23@gmail.com)
+[![GitHub](https://img.shields.io/badge/GitHub-AadityaPanda-black?style=for-the-badge&logo=github&logoColor=white)](https://github.com/AadityaPanda)
+
+---
+
+<sub>💝 **Thank you for using the User Registration App!**</sub>
+
+*If you found this project helpful, please consider giving it a ⭐ on GitHub!*
+
+</div>
